@@ -62,6 +62,7 @@ export default function Sidebar({ categories }: { categories: Category[] }) {
             </Link>
             {routes?.map((route) => (
               <Link
+                key={route?.href}
                 href={route?.href}
                 className={cn(
                   "text-md font-medium transition-colors hover:text-black",
