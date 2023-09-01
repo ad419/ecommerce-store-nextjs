@@ -43,7 +43,7 @@ const BillboardComponent: React.FC<BillboardProps> = ({ data }) => {
         const brightness = (avgR * 299 + avgG * 587 + avgB * 114) / 1000;
 
         // Set the text color based on brightness
-        if (brightness > 128) {
+        if (brightness > 50) {
           setTextColor("black"); // Use black text for light backgrounds
         } else {
           setTextColor("white"); // Use white text for dark backgrounds
