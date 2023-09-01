@@ -4,6 +4,7 @@ import Gallery from "@/components/gallery";
 import Info from "@/components/info";
 import ProductList from "@/components/product-list";
 import Container from "@/components/ui/container";
+import { headers } from "next/headers";
 
 interface ProductPageProps {
   params: {
@@ -12,10 +13,17 @@ interface ProductPageProps {
 }
 
 const ProductPage: React.FC<ProductPageProps> = async ({ params }) => {
+  const headersList = headers();
+  const fullUrl = headersList.get("referer") || "";
+  const storeId = fullUrl.split("store=")[1];
+
   const product = await getProduct(params.productId);
-  const suggestedProducts = await getProducts({
-    categoryId: product?.category?.id,
-  });
+  const suggestedProducts = (await getProducts(
+    {
+      categoryId: product?.category?.id,
+    },
+    storeId
+  )) as any; //@ts-ignore
   return (
     <div className="bg-white">
       <Container>

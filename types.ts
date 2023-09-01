@@ -2,6 +2,14 @@ export interface Billboard {
   id: string;
   label: string;
   imageUrl: string;
+  active: boolean;
+}
+
+export interface Store {
+  id: string;
+  name: string;
+  activated: boolean;
+  userId: string;
 }
 
 export interface Category {
@@ -16,6 +24,7 @@ export interface Product {
   name: string;
   price: string;
   isFeatured: boolean;
+  storeId: string;
   size: Size;
   color: Color;
   images: Image[];
@@ -35,5 +44,5 @@ export interface Size {
 export interface Color {
   id: string;
   name: string;
-  value: string
+  value: string;
 }
