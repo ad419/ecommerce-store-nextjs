@@ -12,7 +12,8 @@ const Summary = () => {
   const searchParams = useSearchParams();
   const items = useCart((state) => state.items);
   const removeAll = useCart((state) => state.removeAll);
-
+  const activeStore = localStorage.getItem("store");
+  const activeStoreId = activeStore ? JSON.parse(activeStore).id : "";
   useEffect(() => {
     if (searchParams.get("success")) {
       toast.success("Payment completed");
@@ -30,7 +31,7 @@ const Summary = () => {
 
   const onCheckout = async () => {
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/checkout`,
+      `${process.env.NEXT_PUBLIC_API_URL_BASE}/${activeStoreId}/checkout`,
       { productIds: items.map((item) => item.id) }
     );
 
@@ -47,12 +48,34 @@ const Summary = () => {
         </div>
       </div>
       <Button
-        disabled={items.length === 0}
         onClick={onCheckout}
+        // disable if product store id is not equal to active store id
+        disabled={
+          items.some((item) => item.storeId !== activeStoreId) ||
+          items.length === 0
+        }
         className="w-full mt-6"
       >
         Checkout
       </Button>
+      {/*
+        notify user if product store id is not equal to active store id
+      */}
+      {items.some((item) => item.storeId !== activeStoreId) && (
+        <p className="text-sm text-red-500 mt-2">
+          You have items from another store in your cart. Please checkout
+          separately.
+        </p>
+      )}
+      {/*
+        notify user if he is readyt to checkout 
+      */}
+      {items.length > 0 &&
+        items.every((item) => item.storeId === activeStoreId) && (
+          <p className="text-sm text-green-500 mt-2">
+            You are ready to checkout.
+          </p>
+        )}
     </div>
   );
 };

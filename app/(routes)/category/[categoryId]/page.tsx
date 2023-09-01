@@ -8,6 +8,7 @@ import Filter from "./components/filter";
 import NoResults from "@/components/ui/no-results";
 import ProductCard from "@/components/ui/product-card";
 import MobileFilters from "./components/mobile-filters";
+import { headers } from "next/headers";
 
 export const revalidate = 0;
 
@@ -25,12 +26,20 @@ const CategoryPage: React.FC<CategoryPageProps> = async ({
   params,
   searchParams,
 }) => {
-  const products = await getProducts({
-    categoryId: params.categoryId,
-    colorId: searchParams.colorId,
-    sizeId: searchParams.sizeId,
-  });
+  const headersList = headers();
+  const fullUrl = headersList.get("referer") || "";
+  const storeId = fullUrl.split("store=")[1];
+
+  const products = await getProducts(
+    {
+      categoryId: params.categoryId,
+      colorId: searchParams.colorId,
+      sizeId: searchParams.sizeId,
+    },
+    storeId
+  );
   const sizes = await getSizes();
+
   const colors = await getColors();
   const category = await getCategory(params.categoryId);
 
