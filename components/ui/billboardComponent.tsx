@@ -7,19 +7,17 @@ interface BillboardProps {
 }
 
 const BillboardComponent: React.FC<BillboardProps> = ({ data }) => {
-  const [textColor, setTextColor] = useState<string>("white"); // Default text color
+  const [textColor, setTextColor] = useState<string>("transparent"); // Default text color
 
   useEffect(() => {
-    // Function to calculate the average color of an image
     const getAverageColor = (img: HTMLImageElement) => {
       img.setAttribute("crossOrigin", "anonymous");
       const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
       const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
-      // Ensure the image is loaded before calculating the average color
       img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
         ctx.drawImage(img, 0, 0, img.width, img.height);
         const imageData = ctx.getImageData(0, 0, img.width, img.height).data;
 
@@ -35,13 +33,13 @@ const BillboardComponent: React.FC<BillboardProps> = ({ data }) => {
           count++;
         }
 
-        const avgR = Math.round(totalR / count);
-        const avgG = Math.round(totalG / count);
-        const avgB = Math.round(totalB / count);
+        const avgR = totalR / count;
+        const avgG = totalG / count;
+        const avgB = totalB / count;
 
-        // Calculate the brightness of the average color
+        // Calculate the brightness using the standard formula
         const brightness = (avgR * 299 + avgG * 587 + avgB * 114) / 1000;
-
+        console.log(brightness);
         // Set the text color based on brightness
         if (brightness > 128) {
           setTextColor("black"); // Use black text for light backgrounds
@@ -52,12 +50,13 @@ const BillboardComponent: React.FC<BillboardProps> = ({ data }) => {
     };
 
     const image = new Image();
-    image.src = data?.imageUrl || "";
 
-    // Ensure the image is loaded before calculating the average color
+    // Set the onload handler before setting the src
     image.onload = () => {
       getAverageColor(image);
     };
+
+    image.src = data?.imageUrl || "";
   }, [data?.imageUrl]);
 
   return (
