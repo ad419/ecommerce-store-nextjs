@@ -46,3 +46,8 @@ export interface Color {
   name: string;
   value: string;
 }
+
+export interface User {
+  email: string;
+  password: string;
+}

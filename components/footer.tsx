@@ -1,4 +1,16 @@
+import { headers } from "next/headers";
+
 const Footer = () => {
+  const headersList = headers();
+  const domain = headersList.get("host") || "";
+  const fullUrl = headersList.get("referer") || "";
+
+  // if pathname is /join, return null
+
+  if (fullUrl.includes("join")) {
+    return null;
+  }
+
   return (
     <footer className="bg-white border-t">
       <div className="mx-auto py-10">

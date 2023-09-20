@@ -24,6 +24,14 @@ const Navbar = async () => {
     throw new Error("Error fetching stores");
   }
 
+  console.log(fullUrl);
+
+  if (fullUrl.includes("join")) {
+    return null;
+  }
+
+  console.log(stores);
+
   return (
     <div className="border-b">
       <Container>
