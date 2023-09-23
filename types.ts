@@ -49,7 +49,12 @@ export interface Color {
 
 export interface User {
   email: string;
+  name: string;
+  image: string;
+  createdAt: any;
+  accounts: any;
   password: string;
+  cupons: Cupon[];
 }
 
 export interface Cupon {

@@ -2,9 +2,14 @@ import React from "react";
 import Container from "@/components/ui/container";
 import NextImage from "next/image";
 import moment from "moment";
-import getCupon from "@/actions/get-cupon";
+import { User, Cupon } from "@/types";
 
-const Layout = ({ user, cupons }: { user: any; cupons: any }) => {
+interface LayoutProps {
+  user: User;
+  cupons: Cupon[];
+}
+
+const Layout: React.FC<LayoutProps> = ({ user, cupons }) => {
   // map through cupons and find the ones which id match to user.cupons
   const userCoupons = user.cupons
     .map((userCupon: any) => {
