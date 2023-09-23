@@ -73,7 +73,6 @@ const BillboardComponent: React.FC<BillboardProps> = ({ data, cupons }) => {
 
   const cupon = cupons[Math.floor(Math.random() * cupons.length)];
 
-
   async function handleClaimCupon() {
     // if user is not logged in dont claim the cupon
     if (!session) return toast.error("You need to login to claim the cupon");
