@@ -5,19 +5,13 @@ import NextImage from "next/image";
 import moment from "moment";
 import { User, Cupon } from "@/types";
 
-interface LayoutProps {
-  user: User;
-  cupons: Cupon[];
-}
-
-const Layout: React.FC<LayoutProps> = ({ user, cupons }) => {
+const Layout = ({ user, cupons }: { user: User; cupons: Cupon[] }) => {
   // map through cupons and find the ones which id match to user.cupons
   const userCoupons = user.cupons
     .map((userCupon: any) => {
-      return cupons.find((cupon: any) => cupon.id === userCupon.cuponId);
+      return cupons.find((cupon) => cupon.id === userCupon.cuponId);
     })
     .filter(Boolean);
-
   return (
     <Container>
       <div className="flex flex-col mt-20 p-3 space-y-3">
