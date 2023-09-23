@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Billboard {
+  id        String   @id
+  storeId   String
+  label     String
+  imageUrl  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  isActive  Boolean  @default(false)
+
+  @@index([storeId])
+}
+
+model Category {
+  id          String   @id
+  storeId     String
+  billboardId String
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  @@index([billboardId])
+  @@index([storeId])
+}
+
+model Color {
+  id        String   @id
+  storeId   String
+  name      String
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([storeId])
+}
+
+model Cupon {
+  id          String    @id
+  storeId     String
+  name        String
+  value       String
+  createdAt   DateTime  @default(now())
+  claimed     Boolean   @default(false)
+  claimedAt   DateTime?
+  expiresAt   DateTime
+  activated   Boolean   @default(false)
+  code        String?
+  users   UserToCupon[]
+  @@index([storeId])
+}
+
+model Image {
+  id        String   @id
+  productId String
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([productId])
+}
+
+model Order {
+  id        String   @id
+  storeId   String
+  isPaid    Boolean  @default(false)
+  phone     String   @default("")
+  address   String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([storeId])
+}
+
+model OrderItem {
+  id        String @id
+  orderId   String
+  productId String
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Product {
+  id         String   @id
+  storeId    String
+  categoryId String
+  name       String
+  price      Decimal
+  isFeatured Boolean  @default(false)
+  isArchived Boolean  @default(false)
+  sizeId     String
+  colorId    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+
+  @@index([categoryId])
+  @@index([colorId])
+  @@index([sizeId])
+  @@index([storeId])
+}
+
+model Size {
+  id        String   @id
+  storeId   String
+  name      String
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([storeId])
+}
+
+model Store {
+  id        String   @id
+  name      String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  activated Boolean  @default(false)
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  providerAccountId String
+  access_token      String?
+  expires_at        Int?
+  id_token          String?
+  provider          String
+  refresh_token     String?
+  scope             String?
+  session_state     String?
+  token_type        String?
+  type              String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  cupons        UserToCupon[]
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model UserToCupon {
+  userId String
+  cuponId String
+
+  users User @relation(fields: [userId], references: [id])
+  cupons Cupon @relation(fields: [cuponId], references: [id])
+
+  @@id([userId, cuponId])
+ 
+}
