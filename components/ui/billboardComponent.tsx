@@ -69,12 +69,11 @@ const BillboardComponent: React.FC<BillboardProps> = ({ data, cupons }) => {
     };
   }, [data?.imageUrl]);
 
-  // get the cupon that have bigger value
+  // get the cupon randomly from the cupons array
 
-  if (!cupons.length) return null;
-  const cupon = cupons?.reduce((prev, current) =>
-    prev?.value > current.value ? prev : current
-  );
+  const cupon = cupons[Math.floor(Math.random() * cupons.length)];
+
+
   async function handleClaimCupon() {
     // if user is not logged in dont claim the cupon
     if (!session) return toast.error("You need to login to claim the cupon");
