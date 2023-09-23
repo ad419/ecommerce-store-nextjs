@@ -1,6 +1,6 @@
 import getUser from "@/actions/get-user";
 import React from "react";
-import Layout from "../components/layout";
+import Layout from "@/app/(routes)/user/components/layout";
 import getCupons from "@/actions/get-cupons";
 
 interface UserPageProps {
