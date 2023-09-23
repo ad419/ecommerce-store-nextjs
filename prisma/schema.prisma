@@ -43,17 +43,18 @@ model Color {
 }
 
 model Cupon {
-  id          String    @id
-  storeId     String
-  name        String
-  value       String
-  createdAt   DateTime  @default(now())
-  claimed     Boolean   @default(false)
-  claimedAt   DateTime?
-  expiresAt   DateTime
-  activated   Boolean   @default(false)
-  code        String?
-  users   UserToCupon[]
+  id        String        @id
+  storeId   String
+  name      String
+  value     String
+  createdAt DateTime      @default(now())
+  claimed   Boolean       @default(false)
+  claimedAt DateTime?
+  expiresAt DateTime
+  activated Boolean       @default(false)
+  code      String?
+  users     UserToCupon[]
+
   @@index([storeId])
 }
 
@@ -140,7 +141,8 @@ model Account {
   session_state     String?
   token_type        String?
   type              String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([provider, providerAccountId])
 }
 
@@ -153,15 +155,15 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?       @unique
   emailVerified DateTime?
   image         String?
-  createdAt     DateTime  @default(now())
-  cupons        UserToCupon[]
+  createdAt     DateTime      @default(now())
   accounts      Account[]
   sessions      Session[]
+  cupons        UserToCupon[]
 }
 
 model VerificationToken {
@@ -173,12 +175,10 @@ model VerificationToken {
 }
 
 model UserToCupon {
-  userId String
+  userId  String
   cuponId String
-
-  users User @relation(fields: [userId], references: [id])
-  cupons Cupon @relation(fields: [cuponId], references: [id])
+  cupons  Cupon  @relation(fields: [cuponId], references: [id])
+  users   User   @relation(fields: [userId], references: [id])
 
   @@id([userId, cuponId])
- 
 }
