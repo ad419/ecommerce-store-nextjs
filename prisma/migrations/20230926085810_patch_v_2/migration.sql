@@ -1,4 +1,16 @@
 -- CreateTable
+CREATE TABLE "Store" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "activated" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "Store_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Billboard" (
     "id" TEXT NOT NULL,
     "storeId" TEXT NOT NULL,
@@ -24,6 +36,18 @@ CREATE TABLE "Category" (
 );
 
 -- CreateTable
+CREATE TABLE "Size" (
+    "id" TEXT NOT NULL,
+    "storeId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Size_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Color" (
     "id" TEXT NOT NULL,
     "storeId" TEXT NOT NULL,
@@ -36,19 +60,20 @@ CREATE TABLE "Color" (
 );
 
 -- CreateTable
-CREATE TABLE "Cupon" (
+CREATE TABLE "Product" (
     "id" TEXT NOT NULL,
     "storeId" TEXT NOT NULL,
+    "categoryId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "value" TEXT NOT NULL,
+    "price" DECIMAL(65,30) NOT NULL,
+    "isFeatured" BOOLEAN NOT NULL DEFAULT false,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "sizeId" TEXT NOT NULL,
+    "colorId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "claimed" BOOLEAN NOT NULL DEFAULT false,
-    "claimedAt" TIMESTAMP(3),
-    "expiresAt" TIMESTAMP(3) NOT NULL,
-    "activated" BOOLEAN NOT NULL DEFAULT false,
-    "code" TEXT,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Cupon_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -85,60 +110,35 @@ CREATE TABLE "OrderItem" (
 );
 
 -- CreateTable
-CREATE TABLE "Product" (
-    "id" TEXT NOT NULL,
-    "storeId" TEXT NOT NULL,
-    "categoryId" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "price" DECIMAL(65,30) NOT NULL,
-    "isFeatured" BOOLEAN NOT NULL DEFAULT false,
-    "isArchived" BOOLEAN NOT NULL DEFAULT false,
-    "sizeId" TEXT NOT NULL,
-    "colorId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Size" (
+CREATE TABLE "Cupon" (
     "id" TEXT NOT NULL,
     "storeId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "value" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Size_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Store" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "claimed" BOOLEAN NOT NULL DEFAULT false,
+    "claimedAt" TIMESTAMP(3),
+    "expiresAt" TIMESTAMP(3) NOT NULL,
     "activated" BOOLEAN NOT NULL DEFAULT false,
+    "code" TEXT,
 
-    CONSTRAINT "Store_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Cupon_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Account" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "provider" TEXT NOT NULL,
     "providerAccountId" TEXT NOT NULL,
+    "refresh_token" TEXT,
     "access_token" TEXT,
     "expires_at" INTEGER,
-    "id_token" TEXT,
-    "provider" TEXT NOT NULL,
-    "refresh_token" TEXT,
-    "scope" TEXT,
-    "session_state" TEXT,
     "token_type" TEXT,
-    "type" TEXT NOT NULL,
+    "scope" TEXT,
+    "id_token" TEXT,
+    "session_state" TEXT,
 
     CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
 );
@@ -176,24 +176,44 @@ CREATE TABLE "VerificationToken" (
 CREATE TABLE "UserToCupon" (
     "userId" TEXT NOT NULL,
     "cuponId" TEXT NOT NULL,
+    "claimed" BOOLEAN NOT NULL DEFAULT false,
+    "claimedAt" TIMESTAMP(3),
 
     CONSTRAINT "UserToCupon_pkey" PRIMARY KEY ("userId","cuponId")
+);
+
+-- CreateTable
+CREATE TABLE "_UserToCupon" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
 );
 
 -- CreateIndex
 CREATE INDEX "Billboard_storeId_idx" ON "Billboard"("storeId");
 
 -- CreateIndex
+CREATE INDEX "Category_storeId_idx" ON "Category"("storeId");
+
+-- CreateIndex
 CREATE INDEX "Category_billboardId_idx" ON "Category"("billboardId");
 
 -- CreateIndex
-CREATE INDEX "Category_storeId_idx" ON "Category"("storeId");
+CREATE INDEX "Size_storeId_idx" ON "Size"("storeId");
 
 -- CreateIndex
 CREATE INDEX "Color_storeId_idx" ON "Color"("storeId");
 
 -- CreateIndex
-CREATE INDEX "Cupon_storeId_idx" ON "Cupon"("storeId");
+CREATE INDEX "Product_storeId_idx" ON "Product"("storeId");
+
+-- CreateIndex
+CREATE INDEX "Product_categoryId_idx" ON "Product"("categoryId");
+
+-- CreateIndex
+CREATE INDEX "Product_sizeId_idx" ON "Product"("sizeId");
+
+-- CreateIndex
+CREATE INDEX "Product_colorId_idx" ON "Product"("colorId");
 
 -- CreateIndex
 CREATE INDEX "Image_productId_idx" ON "Image"("productId");
@@ -208,19 +228,7 @@ CREATE INDEX "OrderItem_orderId_idx" ON "OrderItem"("orderId");
 CREATE INDEX "OrderItem_productId_idx" ON "OrderItem"("productId");
 
 -- CreateIndex
-CREATE INDEX "Product_categoryId_idx" ON "Product"("categoryId");
-
--- CreateIndex
-CREATE INDEX "Product_colorId_idx" ON "Product"("colorId");
-
--- CreateIndex
-CREATE INDEX "Product_sizeId_idx" ON "Product"("sizeId");
-
--- CreateIndex
-CREATE INDEX "Product_storeId_idx" ON "Product"("storeId");
-
--- CreateIndex
-CREATE INDEX "Size_storeId_idx" ON "Size"("storeId");
+CREATE INDEX "Cupon_storeId_idx" ON "Cupon"("storeId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provider", "providerAccountId");
@@ -237,8 +245,8 @@ CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token"
 -- CreateIndex
 CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
 
--- AddForeignKey
-ALTER TABLE "UserToCupon" ADD CONSTRAINT "UserToCupon_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "_UserToCupon_AB_unique" ON "_UserToCupon"("A", "B");
 
--- AddForeignKey
-ALTER TABLE "UserToCupon" ADD CONSTRAINT "UserToCupon_cuponId_fkey" FOREIGN KEY ("cuponId") REFERENCES "Cupon"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- CreateIndex
+CREATE INDEX "_UserToCupon_B_index" ON "_UserToCupon"("B");

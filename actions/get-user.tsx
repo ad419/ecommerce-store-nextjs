@@ -14,7 +14,10 @@ const getUser = async (userId: string) => {
   });
 
   if (!user) {
-    throw new Error("User not found");
+    return JSON.stringify({
+      message: "User not found",
+      status: 404,
+    });
   }
 
   return JSON.stringify({

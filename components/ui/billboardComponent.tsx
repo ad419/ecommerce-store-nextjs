@@ -22,7 +22,6 @@ const BillboardComponent: React.FC<BillboardProps> = ({ data, cupons }) => {
   const [cuponModal, setCuponModal] = useState<boolean>(false);
   const { data: session } = useSession() as any;
   const claimCupon = useCupon();
-  const userSesion = session?.user;
   useEffect(() => {
     const getAverageColor = (img: HTMLImageElement) => {
       img.setAttribute("crossOrigin", "anonymous");
@@ -74,11 +73,16 @@ const BillboardComponent: React.FC<BillboardProps> = ({ data, cupons }) => {
   useEffect(() => {
     const syncCupons = async () => {
       // delay fetching the user data to make sure the user is logged in
-      if (!session) return;
+      if (
+        !session ||
+        session?.user?.id === undefined ||
+        session?.user?.id === null
+      )
+        return;
       const user = JSON.parse(
         await getUser(session?.user?.id as string)
       ) as any;
-      const userCoupons = user?.userData.cupons
+      const userCoupons = user?.userData?.cupons
         .map((userCupon: any) => {
           return cupons.find((cupon) => cupon.id === userCupon.cuponId);
         })
@@ -102,9 +106,8 @@ const BillboardComponent: React.FC<BillboardProps> = ({ data, cupons }) => {
       claimCupon.addItem(cupon);
     }
   }
-  const clientCupon = claimCupon.items.filter(
-    (item) => item.id === cupon?.id
-  )[0];
+  const clientCupon =
+    claimCupon?.items?.filter((item) => item.id === cupon?.id)[0] || null;
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
@@ -120,15 +123,13 @@ const BillboardComponent: React.FC<BillboardProps> = ({ data, cupons }) => {
       setCountdown(`${days} : ${hours} : ${minutes} : ${seconds}`);
     }, 1000);
 
-    // if countdown is 0, clear the interval
-
     if (countdown === "0 : 0 : 0 : 0") {
       clearInterval(interval);
     }
 
-    // Clear the interval when the component unmounts
     return () => clearInterval(interval);
-  }, [cupons]); // Include 'cupons' as a dependency
+  }, [cupons]);
+  console.log(clientCupon);
   return (
     <div className="p-4 sm:p-6 lg:p-8 rounded-xl overflow-hidden">
       <div
@@ -137,7 +138,7 @@ const BillboardComponent: React.FC<BillboardProps> = ({ data, cupons }) => {
       >
         {session && (
           <div>
-            {clientCupon ? (
+            {clientCupon !== null ? (
               <div className="absolute bg-red-500 z-50 right-0 top-0 text-white w-[200px] text-muted text-sm flex items-center p-2 cursor-pointer">
                 <h1 className="text-sm font-bold text-white">
                   You have claimed this cupon
@@ -146,6 +147,14 @@ const BillboardComponent: React.FC<BillboardProps> = ({ data, cupons }) => {
             ) : (
               <div
                 onClick={() => setCuponModal(!cuponModal)}
+                style={{
+                  opacity:
+                    countdown === "0 : 0 : 0 : 0"
+                      ? 0
+                      : 1 || clientCupon === null
+                      ? 0
+                      : 1,
+                }}
                 className="absolute bg-red-500 z-50 right-0 top-0 text-white w-[350px] text-lg flex items-center gap-4 p-3 cursor-pointer"
               >
                 {cupon?.name}

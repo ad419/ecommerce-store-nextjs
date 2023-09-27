@@ -9,9 +9,10 @@ const formatter = new Intl.NumberFormat("en-US", {
 
 interface CurrencyProps {
   value?: string | number;
+  className?: string;
 }
 
-const Currency: React.FC<CurrencyProps> = ({ value }) => {
+const Currency: React.FC<CurrencyProps> = ({ value, className }) => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -22,7 +23,11 @@ const Currency: React.FC<CurrencyProps> = ({ value }) => {
     return null;
   }
 
-  return <div className="font-semibold">{formatter.format(Number(value))}</div>;
+  return (
+    <div className={`font-semibold ${className}`}>
+      {formatter.format(Number(value))}
+    </div>
+  );
 };
 
 export default Currency;
